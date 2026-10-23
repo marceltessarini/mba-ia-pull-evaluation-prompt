@@ -40,12 +40,35 @@ load_dotenv()
 
 
 def pull_prompts_from_langsmith():
-    ...
+    client = Client()
+    prompt = client.pull_prompt(
+        "leonanluppi/bug_to_user_story_v1",
+        dangerously_pull_public_prompt=True,
+    )
+
+    output_path = "prompts/bug_to_user_story_v1.yml"
+
+    system_prompt_text = prompt.messages[0].prompt.template
+    user_prompt_text = prompt.messages[1].prompt.template    
+    formatted_user_prompt_text = "|\n{s}".format(s=system_prompt_text)
+
+    data_to_save = {
+        "bug_to_user_story_v1": {
+            "description": "Prompt para converter relatos de bugs em User Stories",
+            "system_prompt": formatted_user_prompt_text,
+            "user_prompt": user_prompt_text,
+            "version": "v1",
+            "created_at": "2025-01-15",
+            "tags": ["bug-analysis", "user-story", "product-management"]
+        }
+    }
+    
+    save_yaml(data_to_save, output_path)
+    print(f"Prompt baixado e salvo com sucesso em: {output_path}")    
 
 
 def main():
-    """Função principal"""
-    ...
+    pull_prompts_from_langsmith()
 
 
 if __name__ == "__main__":
