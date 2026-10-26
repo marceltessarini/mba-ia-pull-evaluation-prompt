@@ -47,35 +47,98 @@ load_dotenv()
 
 
 def push_prompt_to_langsmith(prompt_name: str, prompt_data: dict) -> bool:
-    """
-    Faz push do prompt otimizado para o LangSmith Hub (PÚBLICO).
+    user_name = os.getenv("USERNAME_LANGSMITH_HUB", "")
 
-    Args:
-        prompt_name: Nome do prompt
-        prompt_data: Dados do prompt
+    keys = list(prompt_data.keys())
+    if len(keys) == 1 and isinstance(prompt_data[keys[0]], dict):
+        content = prompt_data[keys[0]]
+    else:
+        content = prompt_data
 
-    Returns:
-        True se sucesso, False caso contrário
-    """
-    ...
+    system_prompt = content.get("system_prompt")
+    user_prompt = content.get("user_prompt")
+    description = content.get("description", "")
+    tags = content.get("tags", [])
 
+    if not system_prompt or not user_prompt:
+        print("Erro: 'system_prompt' ou 'user_prompt' não encontrados nos dados do prompt.")
+        return False
+
+    try:
+        client = Client()
+        
+        prompt = ChatPromptTemplate.from_messages([
+            ("system", system_prompt),
+            ("user", user_prompt),
+        ])
+        
+        url = client.push_prompt(
+            f"{user_name}/{prompt_name}",
+            object=prompt,
+            is_public=True,
+            description=description,
+            tags=tags,
+        )
+        
+        print(f"Prompt enviado com sucesso! URL: {url}")
+        return True
+        
+    except Exception as e:
+        print(f"Erro ao realizar o push para o LangSmith: {e}")
+        return False
 
 def validate_prompt(prompt_data: dict) -> tuple[bool, list]:
-    """
-    Valida estrutura básica de um prompt (versão simplificada).
+    errors = []
 
-    Args:
-        prompt_data: Dados do prompt
+    if not (isinstance(prompt_data, dict) and prompt_data):
+        return False, ["O prompt_data deve ser um dicionário não vazio."]
 
-    Returns:
-        (is_valid, errors) - Tupla com status e lista de erros
-    """
-    ...
+    # Trata caso o YAML venha encapsulado por uma chave raiz (ex: bug_to_user_story_v2)
+    keys = list(prompt_data.keys())
+    if len(keys) == 1 and isinstance(prompt_data[keys[0]], dict):
+        content = prompt_data[keys[0]]
+    else:
+        content = prompt_data
+
+    # Definição dos campos obrigatórios e seus respectivos tipos esperados
+    required_fields = {
+        "description": str,
+        "system_prompt": str,
+        "user_prompt": str,
+        "version": str,
+        "created_at": str,
+        "tags": list
+    }
+
+    # Validação de presença e tipo de cada campo obrigatório
+    for field, expected_type in required_fields.items():
+        if field not in content:
+            errors.append(f"O campo obrigatório '{field}' está ausente.")
+        elif not isinstance(content[field], expected_type):
+            type_name = expected_type.__name__
+            errors.append(f"O campo '{field}' deve ser do tipo {type_name}.")
+
+    is_valid = len(errors) == 0
+    return is_valid, errors
 
 
 def main():
-    """Função principal"""
-    ...
+    prompt_name = "bug_to_user_story_v2"
+    file_path = "prompts/{name}.yml".format(name=prompt_name)
+    prompt_data = load_yaml(file_path)
+
+    is_valid, errors = validate_prompt(prompt_data)
+
+    if not is_valid:
+        print(f"Atenção! O prompt em '{file_path}' apresenta erros de estrutura:")
+        for error in errors:
+            print(f"  - {error}")
+        return
+
+    print(f"Sucesso! O prompt em '{file_path}' está perfeitamente válido.")
+
+    push_prompt_to_langsmith(prompt_name, prompt_data)
+
 
 
 if __name__ == "__main__":
