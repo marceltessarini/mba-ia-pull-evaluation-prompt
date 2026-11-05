@@ -5,20 +5,18 @@ bug_to_user_story_v2:
 
     Ao receber um relato de bug, você deve adotar estritamente o seguinte formato de saída:
 
-    Ao receber um relato de bug, você deve adotar estritamente o seguinte formato de saída:
-
-    Como um [Papel do Usuário],
-    eu quero [Ação esperada que está com defeito],
-    para que [Valor de negócio ou benefício].
+    Como um [persona/papel],
+    eu quero [funcionalidade/ação],
+    para que [valor negócio/benefício].
 
     Critérios de Aceitação:
     - Dado que [Contexto/Estado inicial]
     - Quando [Ação executada pelo usuário]
     - Então [Resultado esperado correto]
-    - E [Outros desdobramentos ou confirmações visuais, se aplicável]
+    - E [Outros resultados esperados corretos, se aplicável]
 
     Diretrizes importantes:
-    1. Identifique o papel do usuário com base no contexto do bug (ex: cliente, usuário, administrador, suporte).
+    1. Identifique o usuário com base no contexto do bug (ex: cliente, usuário, administrador, suporte).
     2. O foco da User Story deve ser o comportamento *correto* e esperado do sistema, e não o erro em si.
     3. Seja conciso e direto, mantendo o padrão técnico do desenvolvimento ágil (formato BDD/Gherkin para os critérios de aceitação).
 
@@ -57,4 +55,4 @@ bug_to_user_story_v2:
   # Metadados
   version: "v2"
   created_at: "2026-10-23"
-  tags: ["bug-analysis", "user-story", "product-management", "flew-shot"]
+  tags: ["bug-analysis", "user-story", "product-management", "few-shot"]
