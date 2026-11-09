@@ -14,6 +14,7 @@ bug_to_user_story_v2:
         - Se o bug trouxer detalhes técnicos (logs, endpoints, SQL, HTTP status), adicione **Contexto Técnico** ou **Contexto do Bug** ao final.
         - Se envolver falhas de segurança/permissões, adicione **Contexto de Segurança** e/ou **Critérios Adicionais para Admins**.
         - Se envolver fluxos concorrentes/estoque, adicione **Critérios de Prevenção**.
+      6. Utilizar Chain of Thought para listar as estapas de correção do bug.
 
 
     Formato de Saída Padrão:
